@@ -4,20 +4,30 @@ import dropbox
 import os
 from os.path import expanduser
 
+
+def isFile(dropboxMeta):
+    return isinstance(dropboxMeta,dropbox.files.FileMetadata)
+
+
+def folder_file():
+    return(os.path.join(relative_path))
+
 def diff_files(local_files, remote_files):
     """Check for which files to add and which ones to delete
     """
-    files_to_be_added = []
-    files_to_be_deleted = []
+    #files_to_be_added = []
+    #files_to_be_deleted = []
+    files_folders_to_be_added=[]
+    files_folders_to_be_deleted=[]
     for file in local_files:
         if file not in remote_files:
-            files_to_be_added.append(file)
+            files_folders_to_be_added.append(file)
 
     for file in remote_files:
         if file not in local_files:
-            files_to_be_deleted.append(file)
+            files_folders_to_be_deleted.append(file)
 
-    return files_to_be_added, files_to_be_deleted
+    return files_folders_to_be_added, files_folders_to_be_deleted
 
 class LocalFileSystem:
     def __init__(self, local_path):
@@ -49,37 +59,52 @@ class TransferData:
         """
         files = []
         file_list = self.dbx.files_list_folder(self.folder_to)
+        
         for file in file_list.entries:
+            print(isFile(file))
+            #print(file.path_lower)
             if file.name != 'test_dropbox':
                 files.append(file.name)
         return files
         
 
 def main():
-    access_token = ''
+    access_token = 'kji8-lj-WlAAAAAAAAAAJiJzyiuOdvWadLz9oOk38M_obJvf9khvd1hQ3EHIrJRT'
 
     home = expanduser("~")
 
-    file_from = os.path.join(home, 'Desktop', 'dropbox')
+    #file_from = os.path.join(home,'new')
+    file_folder_from=os.path.join(home,'new')
 
-    localFileSystem = LocalFileSystem(file_from)
+
+    #localFileSystem = LocalFileSystem(file_from)
+    localFileSystem=LocalFileSystem(file_folder_from)
+    print(localFileSystem.get_files_list())
 
     # file_to = '/test_dropbox/check.txt'  # The full path to upload the file to, including the file name
 
     folder_to = '/test_dropbox'
-    transferData = TransferData(access_token, file_from, folder_to)
+    #transferData = TransferData(access_token, file_from, folder_to)
+    transferData=TransferData(access_token,file_folder_from,folder_to)
+
+    print(transferData.folder_from)
+    print(transferData.folder_to)
 
     # API v2
     # transferData.upload_file(file_from, file_to)
     remote_files = transferData.get_files_list()
+    print(remote_files)
     local_files = localFileSystem.get_files_list()
+    print(local_files)
     files_to_be_added, files_to_be_deleted = diff_files(local_files, remote_files)
+    print(files_to_be_added)
+    print(files_to_be_deleted)
 
-    for file in files_to_be_added:
-        transferData.upload_file(file)
+    #for file in files_to_be_added:
+        #transferData.upload_file(file)
 
-    for file in files_to_be_deleted:
-        transferData.remove_file(file)
+    #for file in files_to_be_deleted:
+        #transferData.remove_file(file)
     
 
 if __name__ == '__main__':
