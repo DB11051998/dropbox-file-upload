@@ -8,8 +8,6 @@ from os.path import expanduser
 def diff_files(local_files,local_files_path,remote_files,remote_files_path):
     """Check for which files to add and which ones to delete
     """
-    #files_to_be_added = []
-    #files_to_be_deleted = []
     files_folders_to_be_added=[]
     files_folders_to_be_deleted=[]
     files_folders_to_be_added_path=[]
@@ -55,8 +53,7 @@ class TransferData:
         """
         
         relative_path=os.path.relpath(local_path,local_directory)
-        print(relative_path)
-        print(drop_path)
+        
 
         try:
            with open(local_path, 'rb') as f:
@@ -67,7 +64,7 @@ class TransferData:
                 for filename in files:
                     local_path = os.path.join(root, filename)
                     relative_path=os.path.relpath(local_path,local_directory)
-                    print(relative_path)
+                  
                     with open(local_path, 'rb') as f:
                         self.dbx.files_upload(f.read(),drop_path+'/'+relative_path)
                       
@@ -114,8 +111,7 @@ def main():
 
 
     files_to_be_added,file_path, files_to_be_deleted,delete_path = diff_files(local_files,local_files_path,remote_files,remote_files_path)
-    print(file_path)
-    print(delete_path)
+ 
     for file in file_path:
         transferData.upload_file(file,file_folder_from,folder_to)
     for file in delete_path:
